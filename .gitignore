@@ -13,6 +13,4 @@ obj/
 
 .env
 
-.env.*
-
 *.log
