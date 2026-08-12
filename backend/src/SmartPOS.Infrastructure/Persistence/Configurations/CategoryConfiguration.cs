@@ -15,7 +15,7 @@ namespace SmartPOS.Infrastructure.Persistence.Configurations
             .HasMaxLength(100);
             builder.Property(c => c.Description)
             .HasMaxLength(255);
-            builder.HasIndex(c => c.Name);
+            builder.HasIndex(c => c.Name).IsUnique();
         }
     }
 }
