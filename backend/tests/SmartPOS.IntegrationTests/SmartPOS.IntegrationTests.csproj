@@ -17,14 +17,17 @@
 
     <PackageReference Include="xunit" />
 
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+
     <PackageReference Include="xunit.runner.visualstudio">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
+<ItemGroup>
     <ProjectReference Include="..\..\src\SmartPOS.Api\SmartPOS.Api.csproj" />
-  </ItemGroup>
+    <ProjectReference Include="..\..\src\SmartPOS.Infrastructure\SmartPOS.Infrastructure.csproj" />
+</ItemGroup>
 
 </Project>
