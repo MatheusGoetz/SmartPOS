@@ -5,17 +5,18 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SmartPOS.Application.Features.Categories.CreateCategory;
 using SmartPOS.Infrastructure.Persistence;
+using SmartPOS.IntegrationTests.Infrastructure;
 using Xunit;
 
 namespace SmartPOS.IntegrationTests.Categories;
 
 public sealed class CreateCategoryTests
-    : IClassFixture<WebApplicationFactory<Program>>
+    : IClassFixture<CustomWebApplicationFactory>
 {
-    private readonly WebApplicationFactory<Program> _factory;
+    private readonly CustomWebApplicationFactory _factory;
 
     public CreateCategoryTests(
-        WebApplicationFactory<Program> factory)
+        CustomWebApplicationFactory factory)
     {
         _factory = factory;
     }
@@ -117,17 +118,28 @@ public sealed class CreateCategoryTests
     }
 
     private async Task PrepareDatabaseAsync()
+{
+    await using var scope =
+        _factory.Services.CreateAsyncScope();
+
+    var dbContext =
+        scope.ServiceProvider
+            .GetRequiredService<SmartPosDbContext>();
+
+    var databaseName =
+        dbContext.Database.GetDbConnection().Database;
+
+    if (!databaseName.EndsWith(
+            "_test",
+            StringComparison.OrdinalIgnoreCase))
     {
-        await using var scope =
-            _factory.Services.CreateAsyncScope();
-
-        var dbContext =
-            scope.ServiceProvider
-                .GetRequiredService<SmartPosDbContext>();
-
-        await dbContext.Database.MigrateAsync();
-
-        await dbContext.Database.ExecuteSqlRawAsync(
-            """TRUNCATE TABLE "Categories";""");
+        throw new InvalidOperationException(
+            $"Integration tests cannot run against database '{databaseName}'.");
     }
+
+    await dbContext.Database.MigrateAsync();
+
+    await dbContext.Database.ExecuteSqlRawAsync(
+        """TRUNCATE TABLE "Categories";""");
+}
 }
